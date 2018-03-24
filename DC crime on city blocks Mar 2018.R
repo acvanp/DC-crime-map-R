@@ -45,7 +45,7 @@ blocks.crimes.streets = merge(blocks.crimes, streets, "STREETSEGI")
 bcs = blocks.crimes.streets
 bcs$week = week(bcs$REPORT_DAT)
 
-collist = c("hotpink", "firebrick1")
+collist = c("deeppink", "red1", "red2", "red3", "red4")
 colfunc<-colorRampPalette(collist)
 
 streets$color = colfunc(nrow(streets))
@@ -96,7 +96,7 @@ for (i in 1:12){
   id = i
   if(id <= 9){id = paste(0,i, sep = "")}
   
-  setwd("C:\\Users\\avanplan\\Dropbox\\Personal projects\\data sets\\DC open data\\DC crime 2017\\plots\\gif")
+  setwd("C:\\Users\\avanplan\\Documents\\GitHub\\DC-crime-map-R\\gif")
   jpeg(paste(id,"DCcrimeRoads.jpg", sep = ""), width = 800, height = 700)
   
   plot(boundaries, ylim = c(38.79323, 38.99526), xlim = c(-77.11664, -76.90953))
@@ -108,7 +108,7 @@ for (i in 1:12){
 }  
 
 
-list.files(path = "C:\\Users\\avanplan\\Dropbox\\Personal projects\\data sets\\DC open data\\DC crime 2017\\plots\\gif", pattern = "*.jpg", full.names = T) %>% 
+list.files(path = "C:\\Users\\avanplan\\Documents\\GitHub\\DC-crime-map-R\\gif", pattern = "*.jpg", full.names = T) %>% 
   map(image_read) %>% # reads each path file
   image_join() %>% # joins image
   image_animate(fps=2) %>% # animates, can opt for number of loops

@@ -101,7 +101,7 @@ for (i in 1:12){
   
   plot(boundaries, ylim = c(38.79323, 38.99526), xlim = c(-77.11664, -76.90953))
   plot(streets, col = streets$color, ylim = c(38.79323, 38.99526), xlim = c(-77.11664, -76.90953), add = TRUE)
-  text(x = -77, y = 38.8, mymonths[i], cex = 1)
+  text(x = -76.9, y = 38.95, mymonths[i], cex = 4)
   
   dev.off()
 

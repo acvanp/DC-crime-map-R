@@ -45,7 +45,7 @@ blocks.crimes.streets = merge(blocks.crimes, streets, "STREETSEGI")
 bcs = blocks.crimes.streets
 bcs$week = week(bcs$REPORT_DAT)
 
-collist = c("deeppink","darkred")
+collist = c("hotpink", "firebrick1")
 colfunc<-colorRampPalette(collist)
 
 streets$color = colfunc(nrow(streets))
@@ -85,8 +85,10 @@ for (i in 1:12){
   colnames(df.d) = c("STREETSEGI", "color")
   
   df.d = df.d[which(!duplicated(df.d$STREETSEGI)),]
-  df.d = df.d[order(df.streets$STREETSEGI),]
-  df.streets$color = as.character(df.d$color)
+  df.d = merge(df.streets, df.d, "STREETSEGI", all = T)
+  df.d = df.d[1:nrow(df.streets),]
+  
+  df.streets$color = as.character(df.d$color.y)
   df.streets$color[which(is.na(df.streets$color))] = "gray"
   # make default no crime color
   
@@ -111,3 +113,4 @@ list.files(path = "C:\\Users\\avanplan\\Dropbox\\Personal projects\\data sets\\D
   image_join() %>% # joins image
   image_animate(fps=2) %>% # animates, can opt for number of loops
   image_write("dc_crime_roads_months_gif.gif") # write to current dir
+

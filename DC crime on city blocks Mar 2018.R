@@ -45,7 +45,7 @@ blocks.crimes.streets = merge(blocks.crimes, streets, "STREETSEGI")
 bcs = blocks.crimes.streets
 bcs$week = week(bcs$REPORT_DAT)
 
-collist = c("pink", "deeppink", "red", "red4", "red4")
+collist = c("pink", "red4", "black")
 colfunc<-colorRampPalette(collist)
 
 streets$color = colfunc(nrow(streets))

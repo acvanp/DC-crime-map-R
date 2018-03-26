@@ -45,7 +45,7 @@ blocks.crimes.streets = merge(blocks.crimes, streets, "STREETSEGI")
 bcs = blocks.crimes.streets
 bcs$week = week(bcs$REPORT_DAT)
 
-collist = c("pink", "red4", "black")
+collist = c("red", "darkred")
 colfunc<-colorRampPalette(collist)
 
 streets$color = colfunc(nrow(streets))
@@ -66,7 +66,7 @@ for (i in 1:12){
   d = NA
   e = NA
   df.d = NA
-  df.streets$color = NA
+  df.streets = data.frame(streets)
   streets$color = NA
 
   a = df.crimes[which(df.crimes$month == i),]
@@ -81,15 +81,26 @@ for (i in 1:12){
   c$BLOCK = c$`b$BLOCK`
   #c$STREETSEGI = NA
   d = merge(c, df.blocks, "BLOCK")
-  df.d = data.frame(d$STREETSEGI, d$color)
-  colnames(df.d) = c("STREETSEGI", "color")
+  df.d = data.frame(d$STREETSEGI, d$color, d$`b$counter`)
+  colnames(df.d) = c("STREETSEGI", "color", "counts")
   
   df.d = df.d[which(!duplicated(df.d$STREETSEGI)),]
   df.d = merge(df.streets, df.d, "STREETSEGI", all = T)
   df.d = df.d[1:nrow(df.streets),]
+  df.d = data.frame(df.d, stringsAsFactors = FALSE)
+  
+  df.d$color.y = lapply(df.d$color.y, function(x) if(is.factor(x)) factor(x) else x)
+  
+  df.d$color.y[which(df.d$counts == 1)] = "yellow"
+  
+  df.d$color.y[which(df.d$counts == 2)] = "orange"
+  
+  df.d$color.y[which(df.d$counts == 3)] = "darkorange"
+  
   
   df.streets$color = as.character(df.d$color.y)
-  df.streets$color[which(is.na(df.streets$color))] = "gray"
+  
+  df.streets$color[which(df.streets$color == "NA")] = "gray"
   # make default no crime color
   
   streets$color = df.streets$color

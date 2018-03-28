@@ -50,8 +50,6 @@ colfunc<-colorRampPalette(collist)
 
 streets$color = colfunc(nrow(streets))
 plot(streets, col = streets$color)
-plot(streets.df)
-
 
 mymonths <- c("Jan","Feb","Mar",
               "Apr","May","Jun",
@@ -68,16 +66,16 @@ for (i in 1:12){
   df.d = NA
   df.streets = data.frame(streets)
   streets$color = NA
-
+  
   a = df.crimes[which(df.crimes$month == i),]
   b = merge(a, df.blocks, "BLOCK")
   b$counter = 1
   c = aggregate(b$counter ~ b$BLOCK, FUN = sum)
   c$color = NA
   cfunc = colfunc(max(c$`b$counter`))
-    for(j in 1:nrow(c)){
-      c$color[j] = cfunc[c$`b$counter`[j]]
-    }
+  for(j in 1:nrow(c)){
+    c$color[j] = cfunc[c$`b$counter`[j]]
+  }
   c$BLOCK = c$`b$BLOCK`
   #c$STREETSEGI = NA
   d = merge(c, df.blocks, "BLOCK")
@@ -110,12 +108,34 @@ for (i in 1:12){
   setwd("C:\\Users\\avanplan\\Documents\\GitHub\\DC-crime-map-R\\gif")
   jpeg(paste(id,"DCcrimeRoads.jpg", sep = ""), width = 800, height = 700)
   
+  msq = 9
+  mat = rep(1,msq)
+  mat[3] =2
+  layout(matrix(mat, sqrt(msq),sqrt(msq),byrow = TRUE))
+    # c(bottom, left, top, right)
+  par(mar=c(4,2,1,1))
+  
+    
   plot(boundaries, ylim = c(38.79323, 38.99526), xlim = c(-77.11664, -76.90953))
   plot(streets, col = streets$color, ylim = c(38.79323, 38.99526), xlim = c(-77.11664, -76.90953), add = TRUE)
-  text(x = -76.9, y = 38.95, mymonths[i], cex = 4)
+  #text(x = -76.9, y = 38.95, mymonths[i], cex = 4)
+  
+  
+  # work on adding histogram subplot/legend
+  barcolors = rep(NA, 12)
+  barcolors[i] = "black"
+  
+  #plot(c(0,2),c(0,2),type = 'n', axes = F,xlab = '', ylab = '')
+  
+  hist(df.crimes$month, breaks = seq(0,12), 
+       col = barcolors, main = "", xlab = "monthly crime rate", ylab = "",
+       xaxt = "n")
+  text(i-0.6, 600, mymonths[i], srt = 90, 
+       col = "white", cex = 2)
+  
   
   dev.off()
-
+  
 }  
 
 

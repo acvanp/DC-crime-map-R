@@ -139,8 +139,8 @@ for (i in 1:12){
   #plot(c(0,2),c(0,2),type = 'n', axes = F,xlab = '', ylab = '')
   
   hist(df.crimes$month, breaks = seq(0,12), 
-       col = barcolors, main = "", xlab = "monthly crime rate", ylab = "",
-       xaxt = "n", cex = 2)
+       col = barcolors, main = "2017", xlab = "DC monthly crime rate", ylab = "",
+       xaxt = "n", cex.main = 2, cex.lab = 2)
   text(i-0.6, 600, mymonths[i], srt = 90, 
        col = "white", cex = 2)
   

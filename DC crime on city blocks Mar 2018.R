@@ -10,7 +10,7 @@
 # by the BLOCK column (data conserved?)
 
 # Merge streets and blocks by STREETSEGI column (data conserved?)
-
+library(plyr)
 library(base)
 library(bnlearn)
 library("rgdal")
@@ -19,6 +19,10 @@ library(lubridate)
 library("caTools") # make gifs with write.gif() function or use ImageMagick software
 library(purrr) # for mapping over a function
 library(magick) 
+
+colfunc = colorRampPalette(c("red", "darkorange", "orange", "yellow"))
+
+legend_image <- as.raster(matrix(colfunc(4), ncol=1))
 
 
 setwd("C:\\Users\\avanplan\\Dropbox\\Personal projects\\data sets\\DC open data\\DC crime 2017")
@@ -51,6 +55,7 @@ bcs$week = week(bcs$REPORT_DAT)
 #streets$color = colfunc(nrow(streets))
 #plot(streets, col = streets$color)
 
+
 mymonths <- c("Jan","Feb","Mar",
               "Apr","May","Jun",
               "Jul","Aug","Sep",
@@ -70,7 +75,7 @@ for (i in 1:12){
   a = df.crimes[which(df.crimes$month == i),]
   b = merge(a, df.blocks, "BLOCK")
   b$counter = 1
-  c = aggregate(b$counter ~ b$BLOCK, FUN = sum)
+  c = aggregate(b$counter ~ b$STREETSEGI, FUN = sum)
   c$color = NA
   
   c$color[which(c$`b$counter` == 1)] = "yellow"
@@ -83,28 +88,27 @@ for (i in 1:12){
   
   c$color[which(is.na(c$color))] = "gray"  
   
-  
-  c$BLOCK = c$`b$BLOCK`
-  #c$STREETSEGI = NA
-  d = merge(c, df.blocks, "BLOCK")
-  df.d = data.frame(d$STREETSEGI, d$color, d$`b$counter`)
-  colnames(df.d) = c("STREETSEGI", "color", "counts")
+  df.d = c
+  colnames(df.d) = c("STREETSEGI", "counts", "color")
   
   df.d = df.d[which(!duplicated(df.d$STREETSEGI)),]
   
   df.d$color = lapply(df.d$color, function(x) if(is.factor(x)) factor(x) else x)
   df.d$color = unlist(df.d$color)
   
-  df.d = merge(df.streets, df.d, "STREETSEGI", all = T)
-  df.d = df.d[1:nrow(df.streets),]
-  df.d = data.frame(df.d, stringsAsFactors = FALSE)
-  hist(df.d$counts, breaks = 50)
+  #df.d = join(df.streets, df.d, by = "STREETSEGI")
   
-  hist(df.d$counts, breaks = 50)
+  df.d = merge(df.streets, df.d, "STREETSEGI", all.x = T)
+  #df.d = df.d[1:nrow(df.streets),]
+  #df.d = nrow(df.d[which(!is.na(df.d$STREETSEGI)),])
+  #df.d = data.frame(df.d, stringsAsFactors = FALSE)
+  #hist(df.d$counts, breaks = 50)
+  
+  #hist(df.d$counts, breaks = 50)
   
   df.streets$color = as.character(df.d$color.y)
   
-  # not sure whether to gray the NA's
+    # not sure whether to gray the NA's
   df.streets$color[which(is.na(df.streets$color))] = "gray"
   
   streets$color = df.streets$color
@@ -116,7 +120,8 @@ for (i in 1:12){
   
   msq = 9
   mat = rep(1,msq)
-  mat[3] =2
+  mat[3] = 2
+  mat[9] = 3
   layout(matrix(mat, sqrt(msq),sqrt(msq),byrow = TRUE))
     # c(bottom, left, top, right)
   par(mar=c(4,2,1,1))
@@ -135,10 +140,17 @@ for (i in 1:12){
   
   hist(df.crimes$month, breaks = seq(0,12), 
        col = barcolors, main = "", xlab = "monthly crime rate", ylab = "",
-       xaxt = "n")
+       xaxt = "n", cex = 2)
   text(i-0.6, 600, mymonths[i], srt = 90, 
        col = "white", cex = 2)
   
+  # color legend
+  plot(legend_image, type = 'n', axes = F,xlab = '', ylab = '')
+  text(x = -0.5, y = 2, "crime rate per block", cex = 1.5, srt = 90)
+  text(x = 1, y = 0.5, "1", cex = 2, srt = 0)
+  text(x = 1, y = 1.5, "2", cex = 2, srt = 0)
+  text(x = 1, y = 2.5, "3", cex = 2, srt = 0)
+  text(x = 1, y = 3.5, ">= 4", cex = 2, srt = 0)
   
   dev.off()
   

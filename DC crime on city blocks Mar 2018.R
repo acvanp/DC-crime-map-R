@@ -45,11 +45,11 @@ blocks.crimes.streets = merge(blocks.crimes, streets, "STREETSEGI")
 bcs = blocks.crimes.streets
 bcs$week = week(bcs$REPORT_DAT)
 
-collist = c("red", "darkred")
-colfunc<-colorRampPalette(collist)
-
-streets$color = colfunc(nrow(streets))
-plot(streets, col = streets$color)
+#collist = c("red", "darkred")
+#colfunc<-colorRampPalette(collist)
+#streets$color = NA
+#streets$color = colfunc(nrow(streets))
+#plot(streets, col = streets$color)
 
 mymonths <- c("Jan","Feb","Mar",
               "Apr","May","Jun",
@@ -72,10 +72,18 @@ for (i in 1:12){
   b$counter = 1
   c = aggregate(b$counter ~ b$BLOCK, FUN = sum)
   c$color = NA
-  cfunc = colfunc(max(c$`b$counter`))
-  for(j in 1:nrow(c)){
-    c$color[j] = cfunc[c$`b$counter`[j]]
-  }
+  
+  c$color[which(c$`b$counter` == 1)] = "yellow"
+  
+  c$color[which(c$`b$counter` == 2)] = "orange"
+  
+  c$color[which(c$`b$counter` == 3)] = "darkorange"
+  
+  c$color[which(c$`b$counter` >= 4)] = "red"  
+  
+  c$color[which(is.na(c$color))] = "gray"  
+  
+  
   c$BLOCK = c$`b$BLOCK`
   #c$STREETSEGI = NA
   d = merge(c, df.blocks, "BLOCK")
@@ -83,23 +91,21 @@ for (i in 1:12){
   colnames(df.d) = c("STREETSEGI", "color", "counts")
   
   df.d = df.d[which(!duplicated(df.d$STREETSEGI)),]
+  
+  df.d$color = lapply(df.d$color, function(x) if(is.factor(x)) factor(x) else x)
+  df.d$color = unlist(df.d$color)
+  
   df.d = merge(df.streets, df.d, "STREETSEGI", all = T)
   df.d = df.d[1:nrow(df.streets),]
   df.d = data.frame(df.d, stringsAsFactors = FALSE)
+  hist(df.d$counts, breaks = 50)
   
-  df.d$color.y = lapply(df.d$color.y, function(x) if(is.factor(x)) factor(x) else x)
-  
-  df.d$color.y[which(df.d$counts == 1)] = "yellow"
-  
-  df.d$color.y[which(df.d$counts == 2)] = "orange"
-  
-  df.d$color.y[which(df.d$counts == 3)] = "darkorange"
-  
+  hist(df.d$counts, breaks = 50)
   
   df.streets$color = as.character(df.d$color.y)
   
-  df.streets$color[which(df.streets$color == "NA")] = "gray"
-  # make default no crime color
+  # not sure whether to gray the NA's
+  df.streets$color[which(is.na(df.streets$color))] = "gray"
   
   streets$color = df.streets$color
   id = i

@@ -147,10 +147,10 @@ for (i in 1:12){
   # color legend
   plot(legend_image, type = 'n', axes = F,xlab = '', ylab = '')
   text(x = -0.5, y = 2, "crime rate per block", cex = 1.5, srt = 90)
-  text(x = 1, y = 0.5, "1", cex = 2, srt = 0)
-  text(x = 1, y = 1.5, "2", cex = 2, srt = 0)
-  text(x = 1, y = 2.5, "3", cex = 2, srt = 0)
-  text(x = 1, y = 3.5, ">= 4", cex = 2, srt = 0)
+  text(x = 1.1, y = 0.5, "1", cex = 2, srt = 0)
+  text(x = 1.1, y = 1.5, "2", cex = 2, srt = 0)
+  text(x = 1.1, y = 2.5, "3", cex = 2, srt = 0)
+  text(x = 1.2, y = 3.5, "4+", cex = 2, srt = 0)
   
   dev.off()
   

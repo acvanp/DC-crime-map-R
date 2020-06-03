@@ -12,7 +12,6 @@
 # Merge streets and blocks by STREETSEGI column (data conserved?)
 library(plyr)
 library(base)
-library(bnlearn)
 library("rgdal")
 library(lubridate)
 
@@ -24,12 +23,12 @@ colfunc = colorRampPalette(c("red", "darkorange", "orange", "yellow"))
 
 legend_image <- as.raster(matrix(colfunc(4), ncol=1))
 
+crimes = readOGR("C:\\Users\\Lenovo\\DCcrimeDATA\\DC crime 2017\\Crime_Incidents_in_2017.shp")
+streets = readOGR("C:\\Users\\Lenovo\\DCcrimeDATA\\Street_Centerlines\\Street_Centerlines.shp")
+blocks = readOGR("C:\\Users\\Lenovo\\DCcrimeDATA\\Block_Centroids\\Block_Centroids.shp")
+boundaries = readOGR("C:\\Users\\Lenovo\\DCcrimeDATA\\boundaries\\cb_2016_us_state_500k.shp")
 
-setwd("C:\\Users\\avanplan\\Dropbox\\Personal projects\\data sets\\DC open data\\DC crime 2017")
-crimes = readOGR("Crime_Incidents_in_2017.shp")
-streets = readOGR("C:\\Users\\avanplan\\Dropbox\\Personal projects\\data sets\\DC open data\\Street_Centerlines\\Street_Centerlines.shp")
-blocks = readOGR("C:\\Users\\avanplan\\Dropbox\\Personal projects\\data sets\\DC open data\\Block_Centroids\\Block_Centroids.shp")
-boundaries = readOGR("C:\\Users\\avanplan\\Dropbox\\Personal projects\\data sets\\boundaries\\cb_2016_us_state_500k.shp")
+setwd("C:\\Users\\Lenovo\\DC-crime-map-R")
 
 # this new color column gets repopulated with a 
 # loop depending on monthly crime rate
@@ -112,10 +111,13 @@ for (i in 1:12){
   df.streets$color[which(is.na(df.streets$color))] = "gray"
   
   streets$color = df.streets$color
+  streets$lwd = 1
+  streets$lwd[which(streets$color != "gray")] = 3
+  
   id = i
   if(id <= 9){id = paste(0,i, sep = "")}
   
-  setwd("C:\\Users\\avanplan\\Documents\\GitHub\\DC-crime-map-R\\gif")
+  setwd("C:\\Users\\Lenovo\\DC-crime-map-R\\gif\\gifimages")
   jpeg(paste(id,"DCcrimeRoads.jpg", sep = ""), width = 800, height = 700)
   
   msq = 9
@@ -128,7 +130,10 @@ for (i in 1:12){
   
     
   plot(boundaries, ylim = c(38.79323, 38.99526), xlim = c(-77.11664, -76.90953))
-  plot(streets, col = streets$color, ylim = c(38.79323, 38.99526), xlim = c(-77.11664, -76.90953), add = TRUE)
+  
+  plot(streets, col = streets$color, lwd = streets$lwd,
+       ylim = c(38.79323, 38.99526), xlim = c(-77.11664, -76.90953), 
+       add = TRUE)
   #text(x = -76.9, y = 38.95, mymonths[i], cex = 4)
   
   
@@ -140,26 +145,26 @@ for (i in 1:12){
   
   hist(df.crimes$month, breaks = seq(0,12), 
        col = barcolors, main = "2017", xlab = "DC monthly crime rate", ylab = "",
-       xaxt = "n", cex.main = 2, cex.lab = 2)
+       xaxt = "n", cex.main = 2, cex.lab = 2,  cex.axis=2)
   text(i-0.6, 600, mymonths[i], srt = 90, 
        col = "white", cex = 2)
   
   # color legend
   plot(legend_image, type = 'n', axes = F,xlab = '', ylab = '')
-  text(x = -0.5, y = 2, "crime rate per block", cex = 1.5, srt = 90)
-  text(x = 1.1, y = 0.5, "1", cex = 2, srt = 0)
-  text(x = 1.1, y = 1.5, "2", cex = 2, srt = 0)
-  text(x = 1.1, y = 2.5, "3", cex = 2, srt = 0)
-  text(x = 1.2, y = 3.5, "4+", cex = 2, srt = 0)
+  text(x = -0.5, y = 2, "crimes per block", cex = 2.2, srt = 90)
+  text(x = 0.5, y = 0.5, "1", cex = 2, srt = 0)
+  text(x = 0.5, y = 1.5, "2", cex = 2, srt = 0)
+  text(x = 0.5, y = 2.5, "3", cex = 2, srt = 0)
+  text(x = 0.5, y = 3.5, "4+", cex = 2, srt = 0)
   
   dev.off()
   
 }  
 
 
-list.files(path = "C:\\Users\\avanplan\\Documents\\GitHub\\DC-crime-map-R\\gif", pattern = "*.jpg", full.names = T) %>% 
+list.files(path = "C:\\Users\\Lenovo\\DC-crime-map-R\\gif\\gifimages", pattern = "*.jpg", full.names = T) %>% 
   map(image_read) %>% # reads each path file
   image_join() %>% # joins image
   image_animate(fps=2) %>% # animates, can opt for number of loops
-  image_write("dc_crime_roads_months_gif.gif") # write to current dir
+  image_write("DCcrimeGIFlwd.gif") # write to current dir
 

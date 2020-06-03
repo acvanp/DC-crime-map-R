@@ -38,6 +38,9 @@ df.crimes = data.frame(crimes)
 df.crimes$week = week(df.crimes$REPORT_DAT)
 df.crimes$month = month(df.crimes$REPORT_DAT)
 
+monthdays = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+barplot(table(df.crimes$month)/monthdays)
+
 df.streets = data.frame(streets)
 df.blocks = data.frame(blocks)
 df.blocks$BLOCK = df.blocks$BLOCKNAME
@@ -142,12 +145,22 @@ for (i in 1:12){
   barcolors[i] = "black"
   
   #plot(c(0,2),c(0,2),type = 'n', axes = F,xlab = '', ylab = '')
-  
-  hist(df.crimes$month, breaks = seq(0,12), 
-       col = barcolors, main = "2017", xlab = "DC monthly crime rate", ylab = "",
-       xaxt = "n", cex.main = 2, cex.lab = 2,  cex.axis=2)
-  text(i-0.6, 600, mymonths[i], srt = 90, 
+  # 
+  # hist(df.crimes$month, breaks = seq(0,12),
+  #      col = barcolors, main = "2017", xlab = "DC monthly crime rate", ylab = "",
+  #      xaxt = "n", cex.main = 2, cex.lab = 2,  cex.axis=2)
+  # 
+  # text(i-0.6, 600, mymonths[i], srt = 90,
+  #      col = "white", cex = 2)
+
+  barplot(table(df.crimes$month)/monthdays, col = barcolors, 
+          main = "2017", xlab = "DC mean daily crime rate", ylab = "",
+                xaxt = "n", cex.main = 2, cex.lab = 2,  cex.axis=2,
+          space = rep(0,12))
+  text(i-0.5, 30, mymonths[i], srt = 90, 
        col = "white", cex = 2)
+  
+  
   
   # color legend
   plot(legend_image, type = 'n', axes = F,xlab = '', ylab = '')
